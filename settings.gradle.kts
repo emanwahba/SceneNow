@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "SceneNow"
 include(":app")
- 
+include(":core:network")
