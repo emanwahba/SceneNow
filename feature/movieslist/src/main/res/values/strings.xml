@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="movies_list_title">Trending this week</string>
+    <string name="movies_list_filter_all">All</string>
+    <string name="movies_list_sort">Sort</string>
+    <string name="movies_list_sort_selected">Selected</string>
+    <string name="movies_list_sort_most_popular">Most popular</string>
+    <string name="movies_list_sort_least_popular">Least popular</string>
+    <string name="movies_list_sort_title_az">Title A-Z</string>
+    <string name="movies_list_sort_title_za">Title Z-A</string>
+    <string name="movies_list_sort_newest">Newest first</string>
+    <string name="movies_list_sort_oldest">Oldest first</string>
+</resources>

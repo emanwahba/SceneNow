@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="movie_detail_back">Back</string>
+    <string name="movie_detail_overview">Overview</string>
+    <string name="movie_detail_status">Status</string>
+    <string name="movie_detail_budget">Budget</string>
+    <string name="movie_detail_revenue">Revenue</string>
+    <string name="movie_detail_unknown">Unknown</string>
+    <string name="movie_detail_view_on_imdb">View on IMDb</string>
+    <plurals name="movie_detail_votes">
+        <item quantity="one">(%d vote)</item>
+        <item quantity="other">(%d votes)</item>
+    </plurals>
+</resources>

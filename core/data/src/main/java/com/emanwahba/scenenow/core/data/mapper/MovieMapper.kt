@@ -17,6 +17,7 @@ fun MovieDto.toDomain(): Movie = Movie(
     genreIds = genreIds,
     popularity = popularity,
     releaseDate = releaseDate,
+    description = overview,
 )
 
 fun GenreDto.toDomain(): Genre = Genre(id = id, name = name)

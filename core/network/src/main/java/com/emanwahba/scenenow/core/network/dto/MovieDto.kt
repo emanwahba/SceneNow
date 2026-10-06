@@ -11,6 +11,7 @@ data class MovieDto(
     @SerialName("genre_ids") val genreIds: List<Int> = emptyList(),
     val popularity: Double = 0.0,
     @SerialName("release_date") val releaseDate: String? = null,
+    val overview: String = "",
 )
 
 @Serializable

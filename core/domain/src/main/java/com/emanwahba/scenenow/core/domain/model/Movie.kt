@@ -7,4 +7,5 @@ data class Movie(
     val genreIds: List<Int>,
     val popularity: Double,
     val releaseDate: String?,
+    val description: String = "",
 )
