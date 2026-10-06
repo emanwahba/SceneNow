@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.emanwahba.scenenow.core.domain.model.SortOption
 import com.emanwahba.scenenow.core.domain.usecase.GetGenresUseCase
 import com.emanwahba.scenenow.core.domain.usecase.GetTrendingMoviesUseCase
-import com.emanwahba.scenenow.core.domain.util.Result
+import com.emanwahba.scenenow.core.domain.util.DataResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -45,7 +45,7 @@ class MoviesListViewModel @Inject constructor(
         viewModelScope.launch {
             getTrendingMovies().collect { result ->
                 when (result) {
-                    is Result.Success -> {
+                    is DataResult.Success -> {
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
@@ -55,7 +55,7 @@ class MoviesListViewModel @Inject constructor(
                         }
                     }
 
-                    is Result.Error -> _uiState.update {
+                    is DataResult.Error -> _uiState.update {
                         it.copy(isLoading = false, errorMessage = result.message)
                     }
                 }
@@ -68,7 +68,7 @@ class MoviesListViewModel @Inject constructor(
             getGenres().collect { result ->
                 // A genre-fetch failure is non-fatal for this screen: the movie list is
                 // still useful without filter chips, so we don't surface it as a screen error.
-                if (result is Result.Success) {
+                if (result is DataResult.Success) {
                     _uiState.update { it.copy(genres = result.data) }
                 }
             }

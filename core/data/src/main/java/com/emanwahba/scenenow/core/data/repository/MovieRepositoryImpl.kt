@@ -5,7 +5,7 @@ import com.emanwahba.scenenow.core.domain.model.Genre
 import com.emanwahba.scenenow.core.domain.model.Movie
 import com.emanwahba.scenenow.core.domain.model.MovieDetail
 import com.emanwahba.scenenow.core.domain.repository.MovieRepository
-import com.emanwahba.scenenow.core.domain.util.Result
+import com.emanwahba.scenenow.core.domain.util.DataResult
 import com.emanwahba.scenenow.core.network.api.TmdbApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,7 +17,7 @@ class MovieRepositoryImpl @Inject constructor(
     private val api: TmdbApiService,
 ) : MovieRepository {
 
-    override fun getTrendingMovies(): Flow<Result<List<Movie>>> = flow {
+    override fun getTrendingMovies(): Flow<DataResult<List<Movie>>> = flow {
         val result = runCatching {
             // 5 TMDB pages of 20 results each.
             (1..5).flatMap { page -> api.getTrendingMovies(page = page).results }
@@ -29,18 +29,18 @@ class MovieRepositoryImpl @Inject constructor(
         emit(result.toDomainResult())
     }
 
-    override suspend fun getMovieDetail(movieId: Int): Result<MovieDetail> =
+    override suspend fun getMovieDetail(movieId: Int): DataResult<MovieDetail> =
         runCatching { api.getMovieDetail(movieId).toDomain() }.toDomainResult()
 
-    override fun getGenres(): Flow<Result<List<Genre>>> = flow {
+    override fun getGenres(): Flow<DataResult<List<Genre>>> = flow {
         val result = runCatching { api.getGenres().genres.map { it.toDomain() } }
         emit(result.toDomainResult())
     }
 }
 
-private fun <T> kotlin.Result<T>.toDomainResult(): Result<T> = fold(
-    onSuccess = { Result.Success(it) },
-    onFailure = { Result.Error(it.toUserMessage(), it) },
+private fun <T> kotlin.Result<T>.toDomainResult(): DataResult<T> = fold(
+    onSuccess = { DataResult.Success(it) },
+    onFailure = { DataResult.Error(it.toUserMessage(), it) },
 )
 
 private fun Throwable.toUserMessage(): String = when (this) {

@@ -8,7 +8,7 @@ import com.emanwahba.scenenow.core.domain.model.SortOption
 import com.emanwahba.scenenow.core.domain.repository.MovieRepository
 import com.emanwahba.scenenow.core.domain.usecase.GetGenresUseCase
 import com.emanwahba.scenenow.core.domain.usecase.GetTrendingMoviesUseCase
-import com.emanwahba.scenenow.core.domain.util.Result
+import com.emanwahba.scenenow.core.domain.util.DataResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -23,12 +23,12 @@ import org.junit.Before
 import org.junit.Test
 
 private class FakeMovieRepository(
-    private val trending: Result<List<Movie>> = Result.Success(emptyList()),
+    private val trending: DataResult<List<Movie>> = DataResult.Success(emptyList()),
 ) : MovieRepository {
-    override fun getTrendingMovies(): Flow<Result<List<Movie>>> = flowOf(trending)
+    override fun getTrendingMovies(): Flow<DataResult<List<Movie>>> = flowOf(trending)
     override suspend fun getMovieDetail(movieId: Int) = throw NotImplementedError()
-    override fun getGenres(): Flow<Result<List<com.emanwahba.scenenow.core.domain.model.Genre>>> =
-        flowOf(Result.Success(emptyList()))
+    override fun getGenres(): Flow<DataResult<List<com.emanwahba.scenenow.core.domain.model.Genre>>> =
+        flowOf(DataResult.Success(emptyList()))
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,7 +54,7 @@ class MoviesListViewModelTest {
 
     @Test
     fun `loads movies and exposes them sorted by popularity by default`() = runTest {
-        val repository = FakeMovieRepository(trending = Result.Success(listOf(comedy, drama)))
+        val repository = FakeMovieRepository(trending = DataResult.Success(listOf(comedy, drama)))
         val viewModel = viewModel(repository)
 
         viewModel.uiState.test {
@@ -66,7 +66,7 @@ class MoviesListViewModelTest {
 
     @Test
     fun `selecting a genre filters the visible list`() = runTest {
-        val repository = FakeMovieRepository(trending = Result.Success(listOf(comedy, drama)))
+        val repository = FakeMovieRepository(trending = DataResult.Success(listOf(comedy, drama)))
         val viewModel = viewModel(repository)
 
         viewModel.uiState.test {
@@ -81,7 +81,7 @@ class MoviesListViewModelTest {
 
     @Test
     fun `changing sort option re-sorts the visible list`() = runTest {
-        val repository = FakeMovieRepository(trending = Result.Success(listOf(comedy, drama)))
+        val repository = FakeMovieRepository(trending = DataResult.Success(listOf(comedy, drama)))
         val viewModel = viewModel(repository)
 
         viewModel.uiState.test {
@@ -96,7 +96,7 @@ class MoviesListViewModelTest {
 
     @Test
     fun `repository error surfaces as an error message`() = runTest {
-        val repository = FakeMovieRepository(trending = Result.Error("No internet"))
+        val repository = FakeMovieRepository(trending = DataResult.Error("No internet"))
         val viewModel = viewModel(repository)
 
         viewModel.uiState.test {

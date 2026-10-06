@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.emanwahba.scenenow.core.domain.usecase.GetMovieDetailUseCase
-import com.emanwahba.scenenow.core.domain.util.Result
+import com.emanwahba.scenenow.core.domain.util.DataResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,11 +36,11 @@ class MovieDetailViewModel @Inject constructor(
     private fun loadDetail() {
         viewModelScope.launch {
             when (val result = getMovieDetail(movieId)) {
-                is Result.Success -> _uiState.update {
+                is DataResult.Success -> _uiState.update {
                     it.copy(isLoading = false, movie = result.data, errorMessage = null)
                 }
 
-                is Result.Error -> _uiState.update {
+                is DataResult.Error -> _uiState.update {
                     it.copy(isLoading = false, errorMessage = result.message)
                 }
             }
