@@ -54,6 +54,7 @@ class MoviesListViewModel @Inject constructor(
                             ).withVisibleMovies()
                         }
                     }
+
                     is Result.Error -> _uiState.update {
                         it.copy(isLoading = false, errorMessage = result.message)
                     }

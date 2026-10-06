@@ -22,7 +22,9 @@ fun ErrorView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxSize().padding(Spacing.extraLarge),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(Spacing.extraLarge),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

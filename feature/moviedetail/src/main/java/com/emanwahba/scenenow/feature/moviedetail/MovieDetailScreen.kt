@@ -38,8 +38,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
@@ -74,7 +74,10 @@ fun MovieDetailRoute(
                 title = { Text(uiState.movie?.title.orEmpty()) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.movie_detail_back))
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.movie_detail_back)
+                        )
                     }
                 },
                 colors = sceneNowTopAppBarColors(),
@@ -88,6 +91,7 @@ fun MovieDetailRoute(
                 onRetry = viewModel::onRetry,
                 modifier = Modifier.padding(padding),
             )
+
             uiState.movie != null -> MovieDetailContent(uiState.movie!!, padding)
         }
     }
@@ -106,7 +110,10 @@ private fun MovieDetailContent(movie: MovieDetail, padding: PaddingValues) {
 
         if (movie.description.isNotBlank()) {
             Column(verticalArrangement = Arrangement.spacedBy(Spacing.small)) {
-                Text(stringResource(R.string.movie_detail_overview), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.movie_detail_overview),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Text(movie.description, style = MaterialTheme.typography.bodyLarge)
             }
         }
@@ -161,7 +168,11 @@ private fun MovieDetailHeader(movie: MovieDetail) {
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    text = "  " + pluralStringResource(R.plurals.movie_detail_votes, movie.voteCount, movie.voteCount),
+                    text = "  " + pluralStringResource(
+                        R.plurals.movie_detail_votes,
+                        movie.voteCount,
+                        movie.voteCount
+                    ),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -244,8 +255,14 @@ private fun InfoCard(movie: MovieDetail) {
             verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
             InfoRow(stringResource(R.string.movie_detail_status), movie.status)
-            InfoRow(stringResource(R.string.movie_detail_budget), formatMoney(movie.budget, unknown))
-            InfoRow(stringResource(R.string.movie_detail_revenue), formatMoney(movie.revenue, unknown))
+            InfoRow(
+                stringResource(R.string.movie_detail_budget),
+                formatMoney(movie.budget, unknown)
+            )
+            InfoRow(
+                stringResource(R.string.movie_detail_revenue),
+                formatMoney(movie.revenue, unknown)
+            )
         }
     }
 }
@@ -253,7 +270,11 @@ private fun InfoCard(movie: MovieDetail) {
 @Composable
 private fun InfoRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         Text(value, style = MaterialTheme.typography.titleMedium)
     }
 }
@@ -263,5 +284,6 @@ private fun formatMoney(amount: Long, unknown: String): String =
     if (amount <= 0L) {
         unknown
     } else {
-        NumberFormat.getCurrencyInstance(Locale.US).apply { maximumFractionDigits = 0 }.format(amount)
+        NumberFormat.getCurrencyInstance(Locale.US).apply { maximumFractionDigits = 0 }
+            .format(amount)
     }

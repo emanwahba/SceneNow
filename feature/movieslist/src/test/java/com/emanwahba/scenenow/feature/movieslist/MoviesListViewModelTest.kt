@@ -27,7 +27,8 @@ private class FakeMovieRepository(
 ) : MovieRepository {
     override fun getTrendingMovies(): Flow<Result<List<Movie>>> = flowOf(trending)
     override suspend fun getMovieDetail(movieId: Int) = throw NotImplementedError()
-    override fun getGenres(): Flow<Result<List<com.emanwahba.scenenow.core.domain.model.Genre>>> = flowOf(Result.Success(emptyList()))
+    override fun getGenres(): Flow<Result<List<com.emanwahba.scenenow.core.domain.model.Genre>>> =
+        flowOf(Result.Success(emptyList()))
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,8 +42,10 @@ class MoviesListViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private val comedy = Movie(1, "Comedy", null, listOf(35), popularity = 5.0, releaseDate = "2024-01-01")
-    private val drama = Movie(2, "Drama", null, listOf(18), popularity = 50.0, releaseDate = "2023-06-15")
+    private val comedy =
+        Movie(1, "Comedy", null, listOf(35), popularity = 5.0, releaseDate = "2024-01-01")
+    private val drama =
+        Movie(2, "Drama", null, listOf(18), popularity = 50.0, releaseDate = "2023-06-15")
 
     private fun viewModel(repository: MovieRepository) = MoviesListViewModel(
         getTrendingMovies = GetTrendingMoviesUseCase(repository),

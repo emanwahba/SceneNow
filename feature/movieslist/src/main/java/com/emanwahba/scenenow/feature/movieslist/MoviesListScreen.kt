@@ -74,6 +74,7 @@ fun MoviesListRoute(
                 onRetry = viewModel::onRetry,
                 modifier = Modifier.padding(padding),
             )
+
             else -> MoviesListContent(
                 uiState = uiState,
                 onGenreSelected = viewModel::onGenreSelected,
@@ -100,9 +101,10 @@ private fun MoviesListContent(
             )
         }
         val listState = rememberLazyListState()
-        // Keyed items make LazyColumn follow the previously-first movie to its new position
-        // when the list is re-sorted/filtered, so explicitly jump back to the top instead.
-        LaunchedEffect(uiState.visibleMovies) { listState.scrollToItem(0) }
+        var isFirstRun by remember { mutableStateOf(true) }
+        LaunchedEffect(uiState.visibleMovies) {
+            if (isFirstRun) isFirstRun = false else listState.scrollToItem(0)
+        }
         LazyColumn(
             state = listState,
             contentPadding = PaddingValues(Spacing.large),
@@ -186,23 +188,47 @@ private fun MovieRow(movie: Movie, onClick: () -> Unit) {
 private fun SortMenu(current: SortOption, onSortOptionChanged: (SortOption) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
     IconButton(onClick = { expanded = true }) {
-        Icon(Icons.AutoMirrored.Filled.Sort, contentDescription = stringResource(R.string.movies_list_sort))
+        Icon(
+            Icons.AutoMirrored.Filled.Sort,
+            contentDescription = stringResource(R.string.movies_list_sort)
+        )
     }
     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
         val options = listOf(
-            stringResource(R.string.movies_list_sort_most_popular) to SortOption(SortField.POPULARITY, SortDirection.DESCENDING),
-            stringResource(R.string.movies_list_sort_least_popular) to SortOption(SortField.POPULARITY, SortDirection.ASCENDING),
-            stringResource(R.string.movies_list_sort_title_az) to SortOption(SortField.TITLE, SortDirection.ASCENDING),
-            stringResource(R.string.movies_list_sort_title_za) to SortOption(SortField.TITLE, SortDirection.DESCENDING),
-            stringResource(R.string.movies_list_sort_newest) to SortOption(SortField.RELEASE_DATE, SortDirection.DESCENDING),
-            stringResource(R.string.movies_list_sort_oldest) to SortOption(SortField.RELEASE_DATE, SortDirection.ASCENDING),
+            stringResource(R.string.movies_list_sort_most_popular) to SortOption(
+                SortField.POPULARITY,
+                SortDirection.DESCENDING
+            ),
+            stringResource(R.string.movies_list_sort_least_popular) to SortOption(
+                SortField.POPULARITY,
+                SortDirection.ASCENDING
+            ),
+            stringResource(R.string.movies_list_sort_title_az) to SortOption(
+                SortField.TITLE,
+                SortDirection.ASCENDING
+            ),
+            stringResource(R.string.movies_list_sort_title_za) to SortOption(
+                SortField.TITLE,
+                SortDirection.DESCENDING
+            ),
+            stringResource(R.string.movies_list_sort_newest) to SortOption(
+                SortField.RELEASE_DATE,
+                SortDirection.DESCENDING
+            ),
+            stringResource(R.string.movies_list_sort_oldest) to SortOption(
+                SortField.RELEASE_DATE,
+                SortDirection.ASCENDING
+            ),
         )
         options.forEach { (label, option) ->
             DropdownMenuItem(
                 text = { Text(label) },
                 trailingIcon = {
                     if (option == current) {
-                        Icon(Icons.Filled.Check, contentDescription = stringResource(R.string.movies_list_sort_selected))
+                        Icon(
+                            Icons.Filled.Check,
+                            contentDescription = stringResource(R.string.movies_list_sort_selected)
+                        )
                     }
                 },
                 onClick = { onSortOptionChanged(option); expanded = false },
