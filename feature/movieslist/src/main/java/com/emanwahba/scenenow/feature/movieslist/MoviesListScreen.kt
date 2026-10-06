@@ -27,9 +27,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,7 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.emanwahba.scenenow.core.domain.model.Movie
 import com.emanwahba.scenenow.core.domain.model.SortDirection
 import com.emanwahba.scenenow.core.domain.model.SortField
@@ -100,18 +100,17 @@ private fun MoviesListContent(
                 onGenreSelected = onGenreSelected,
             )
         }
-        val listState = rememberLazyListState()
-        var isFirstRun by remember { mutableStateOf(true) }
-        LaunchedEffect(uiState.visibleMovies) {
-            if (isFirstRun) isFirstRun = false else listState.scrollToItem(0)
-        }
-        LazyColumn(
-            state = listState,
-            contentPadding = PaddingValues(Spacing.large),
-            verticalArrangement = Arrangement.spacedBy(Spacing.medium),
-        ) {
-            items(uiState.visibleMovies, key = { it.id }) { movie ->
-                MovieRow(movie = movie, onClick = { onMovieClick(movie.id) })
+
+        key(uiState.selectedGenreId, uiState.sortOption) {
+            val listState = rememberLazyListState()
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(Spacing.large),
+                verticalArrangement = Arrangement.spacedBy(Spacing.medium),
+            ) {
+                items(uiState.visibleMovies, key = { it.id }) { movie ->
+                    MovieRow(movie = movie, onClick = { onMovieClick(movie.id) })
+                }
             }
         }
     }

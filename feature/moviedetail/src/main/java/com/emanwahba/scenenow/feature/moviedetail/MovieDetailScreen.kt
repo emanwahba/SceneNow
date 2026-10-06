@@ -48,7 +48,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.emanwahba.scenenow.core.domain.model.MovieDetail
 import com.emanwahba.scenenow.core.ui.components.ErrorView
 import com.emanwahba.scenenow.core.ui.components.LoadingView
