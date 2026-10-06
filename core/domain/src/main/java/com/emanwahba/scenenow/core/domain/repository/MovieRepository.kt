@@ -3,6 +3,7 @@ package com.emanwahba.scenenow.core.domain.repository
 import com.emanwahba.scenenow.core.domain.model.Genre
 import com.emanwahba.scenenow.core.domain.model.Movie
 import com.emanwahba.scenenow.core.domain.model.MovieDetail
+import com.emanwahba.scenenow.core.domain.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {

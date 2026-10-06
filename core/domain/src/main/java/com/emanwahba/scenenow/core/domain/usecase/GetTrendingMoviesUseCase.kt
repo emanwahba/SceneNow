@@ -5,6 +5,7 @@ import com.emanwahba.scenenow.core.domain.model.SortDirection
 import com.emanwahba.scenenow.core.domain.model.SortField
 import com.emanwahba.scenenow.core.domain.model.SortOption
 import com.emanwahba.scenenow.core.domain.repository.MovieRepository
+import com.emanwahba.scenenow.core.domain.util.Result
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
