@@ -32,7 +32,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,29 +45,46 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.emanwahba.scenenow.core.domain.model.Genre
 import com.emanwahba.scenenow.core.domain.model.MovieDetail
 import com.emanwahba.scenenow.core.ui.components.ErrorView
 import com.emanwahba.scenenow.core.ui.components.LoadingView
 import com.emanwahba.scenenow.core.ui.components.MoviePoster
 import com.emanwahba.scenenow.core.ui.theme.Elevation
 import com.emanwahba.scenenow.core.ui.theme.PosterSize
+import com.emanwahba.scenenow.core.ui.theme.SceneNowTheme
 import com.emanwahba.scenenow.core.ui.theme.Spacing
 import com.emanwahba.scenenow.core.ui.theme.sceneNowTopAppBarColors
 import java.text.NumberFormat
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieDetailRoute(
     onBackClick: () -> Unit,
     viewModel: MovieDetailViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    MovieDetailScreen(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onRetry = viewModel::onRetry,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MovieDetailScreen(
+    uiState: MovieDetailUiState,
+    onBackClick: () -> Unit,
+    onRetry: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,11 +105,11 @@ fun MovieDetailRoute(
             uiState.isLoading -> LoadingView(modifier = Modifier.padding(padding))
             uiState.errorMessage != null -> ErrorView(
                 message = uiState.errorMessage.orEmpty(),
-                onRetry = viewModel::onRetry,
+                onRetry = onRetry,
                 modifier = Modifier.padding(padding),
             )
 
-            uiState.movie != null -> MovieDetailContent(uiState.movie!!, padding)
+            uiState.movie != null -> MovieDetailContent(uiState.movie, padding)
         }
     }
 }
@@ -292,3 +308,80 @@ private fun formatMoney(amount: Long, unknown: String): String =
         NumberFormat.getCurrencyInstance(Locale.US).apply { maximumFractionDigits = 0 }
             .format(amount)
     }
+
+private val previewMovie = MovieDetail(
+    id = 1,
+    title = "The Midnight Express",
+    tagline = "Some journeys don't end at the station.",
+    posterUrl = null,
+    genres = listOf(Genre(28, "Action"), Genre(53, "Thriller"), Genre(18, "Drama")),
+    description = "A retired conductor is pulled back in when a stolen train carries more than passengers.",
+    voteAverage = 7.8,
+    voteCount = 1523,
+    budget = 85_000_000L,
+    revenue = 0L,
+    status = "Released",
+    imdbUrl = "https://www.imdb.com/title/tt0000000/",
+    runtimeMinutes = 128,
+    releaseDate = "2026-03-14",
+)
+
+@Preview(showBackground = true, name = "Content")
+@Composable
+private fun MovieDetailScreenPreview() {
+    SceneNowTheme(darkTheme = false) {
+        MovieDetailScreen(MovieDetailUiState(isLoading = false, movie = previewMovie), {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Content - dark")
+@Composable
+private fun MovieDetailScreenDarkPreview() {
+    SceneNowTheme(darkTheme = true) {
+        MovieDetailScreen(MovieDetailUiState(isLoading = false, movie = previewMovie), {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Minimal data")
+@Composable
+private fun MovieDetailScreenMinimalPreview() {
+    SceneNowTheme {
+        MovieDetailScreen(
+            MovieDetailUiState(
+                isLoading = false,
+                movie = previewMovie.copy(
+                    tagline = null,
+                    genres = emptyList(),
+                    description = "",
+                    imdbUrl = null,
+                    runtimeMinutes = null,
+                    releaseDate = null,
+                    budget = 0L,
+                ),
+            ),
+            {}, {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Loading")
+@Composable
+private fun MovieDetailScreenLoadingPreview() {
+    SceneNowTheme {
+        MovieDetailScreen(MovieDetailUiState(isLoading = true), {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Error")
+@Composable
+private fun MovieDetailScreenErrorPreview() {
+    SceneNowTheme {
+        MovieDetailScreen(
+            MovieDetailUiState(
+                isLoading = false,
+                errorMessage = "Something went wrong talking to the server (code 500). Please try again.",
+            ),
+            {}, {},
+        )
+    }
+}

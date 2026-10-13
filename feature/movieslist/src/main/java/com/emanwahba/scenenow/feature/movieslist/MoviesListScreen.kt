@@ -27,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -36,8 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.emanwahba.scenenow.core.domain.model.Genre
 import com.emanwahba.scenenow.core.domain.model.Movie
 import com.emanwahba.scenenow.core.domain.model.SortDirection
 import com.emanwahba.scenenow.core.domain.model.SortField
@@ -47,22 +49,40 @@ import com.emanwahba.scenenow.core.ui.components.LoadingView
 import com.emanwahba.scenenow.core.ui.components.MoviePoster
 import com.emanwahba.scenenow.core.ui.theme.Elevation
 import com.emanwahba.scenenow.core.ui.theme.PosterSize
+import com.emanwahba.scenenow.core.ui.theme.SceneNowTheme
 import com.emanwahba.scenenow.core.ui.theme.Spacing
 import com.emanwahba.scenenow.core.ui.theme.sceneNowTopAppBarColors
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesListRoute(
     onMovieClick: (Int) -> Unit,
     viewModel: MoviesListViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    MoviesListScreen(
+        uiState = uiState,
+        onSortOptionChanged = viewModel::onSortOptionChanged,
+        onGenreSelected = viewModel::onGenreSelected,
+        onMovieClick = onMovieClick,
+        onRetry = viewModel::onRetry,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MoviesListScreen(
+    uiState: MoviesListUiState,
+    onSortOptionChanged: (SortOption) -> Unit,
+    onGenreSelected: (Int?) -> Unit,
+    onMovieClick: (Int) -> Unit,
+    onRetry: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.movies_list_title)) },
-                actions = { SortMenu(uiState.sortOption, viewModel::onSortOptionChanged) },
+                actions = { SortMenu(uiState.sortOption, onSortOptionChanged) },
                 colors = sceneNowTopAppBarColors(),
             )
         },
@@ -71,13 +91,13 @@ fun MoviesListRoute(
             uiState.isLoading -> LoadingView(modifier = Modifier.padding(padding))
             uiState.errorMessage != null -> ErrorView(
                 message = uiState.errorMessage.orEmpty(),
-                onRetry = viewModel::onRetry,
+                onRetry = onRetry,
                 modifier = Modifier.padding(padding),
             )
 
             else -> MoviesListContent(
                 uiState = uiState,
-                onGenreSelected = viewModel::onGenreSelected,
+                onGenreSelected = onGenreSelected,
                 onMovieClick = onMovieClick,
                 padding = padding,
             )
@@ -118,7 +138,7 @@ private fun MoviesListContent(
 
 @Composable
 private fun GenreFilterRow(
-    genres: List<com.emanwahba.scenenow.core.domain.model.Genre>,
+    genres: List<Genre>,
     selectedGenreId: Int?,
     onGenreSelected: (Int?) -> Unit,
 ) {
@@ -233,5 +253,90 @@ private fun SortMenu(current: SortOption, onSortOptionChanged: (SortOption) -> U
                 onClick = { onSortOptionChanged(option); expanded = false },
             )
         }
+    }
+}
+
+private val previewGenres = listOf(Genre(28, "Action"), Genre(35, "Comedy"), Genre(18, "Drama"))
+
+private val previewMovies = listOf(
+    Movie(
+        id = 1,
+        title = "The Midnight Express",
+        posterUrl = null,
+        genreIds = listOf(28),
+        popularity = 98.5,
+        releaseDate = "2026-03-14",
+        description = "A retired conductor is pulled back in when a stolen train carries more than passengers.",
+    ),
+    Movie(
+        id = 2,
+        title = "A Very Long Title That Should Wrap Onto A Second Line And Then Truncate",
+        posterUrl = null,
+        genreIds = listOf(35),
+        popularity = 75.2,
+        releaseDate = "2025-11-02",
+        description = "",
+    ),
+    Movie(
+        id = 3,
+        title = "Quiet Harbor",
+        posterUrl = null,
+        genreIds = listOf(18),
+        popularity = 40.0,
+        releaseDate = null,
+        description = "Two siblings return to their hometown to settle a family estate.",
+    ),
+)
+
+private val previewState = MoviesListUiState(
+    isLoading = false,
+    allMovies = previewMovies,
+    visibleMovies = previewMovies,
+    genres = previewGenres,
+)
+
+@Preview(showBackground = true, name = "Content")
+@Composable
+private fun MoviesListScreenPreview() {
+    SceneNowTheme(darkTheme = false) {
+        MoviesListScreen(previewState, {}, {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Content - dark")
+@Composable
+private fun MoviesListScreenDarkPreview() {
+    SceneNowTheme(darkTheme = true) {
+        MoviesListScreen(previewState.copy(selectedGenreId = 28), {}, {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Loading")
+@Composable
+private fun MoviesListScreenLoadingPreview() {
+    SceneNowTheme {
+        MoviesListScreen(MoviesListUiState(isLoading = true), {}, {}, {}, {})
+    }
+}
+
+@Preview(showBackground = true, name = "Error")
+@Composable
+private fun MoviesListScreenErrorPreview() {
+    SceneNowTheme {
+        MoviesListScreen(
+            MoviesListUiState(
+                isLoading = false,
+                errorMessage = "No internet connection. Please check your network and try again.",
+            ),
+            {}, {}, {}, {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Movie row")
+@Composable
+private fun MovieRowPreview() {
+    SceneNowTheme {
+        MovieRow(movie = previewMovies.first(), onClick = {})
     }
 }
