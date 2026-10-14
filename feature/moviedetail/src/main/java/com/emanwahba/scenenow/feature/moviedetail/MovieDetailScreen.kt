@@ -80,7 +80,7 @@ fun MovieDetailRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MovieDetailScreen(
+internal fun MovieDetailScreen(
     uiState: MovieDetailUiState,
     onBackClick: () -> Unit,
     onRetry: () -> Unit,

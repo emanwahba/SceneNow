@@ -71,7 +71,7 @@ fun MoviesListRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MoviesListScreen(
+internal fun MoviesListScreen(
     uiState: MoviesListUiState,
     onSortOptionChanged: (SortOption) -> Unit,
     onGenreSelected: (Int?) -> Unit,
